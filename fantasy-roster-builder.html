@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Roster Builder</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=general-sans@500,600,700&display=swap" rel="stylesheet" />
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+      --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9; --color-surface-offset: #edeae5; --color-border: #d4d1ca;
+      --color-text: #28251d; --color-text-muted: #686760; --color-text-faint: #a8a59f; --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-success: #437a22; --color-error: #a12c7b;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.06); --shadow-md: 0 10px 24px rgba(0,0,0,.08); --radius-md: 0.75rem; --radius-lg: 1rem; --radius-full: 999px;
+      --font-body: 'Satoshi', sans-serif; --font-display: 'General Sans', sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d; --color-surface-offset: #2b2927; --color-border: #393836;
+      --color-text: #e4e1db; --color-text-muted: #a19e98; --color-text-faint: #696661; --color-primary: #4f98a3; --color-primary-hover: #67aeb9; --color-success: #7db35c; --color-error: #d163a7;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.25); --shadow-md: 0 10px 24px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      min-height: 100dvh; font-family: var(--font-body); font-size: var(--text-base); background:
+      radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 7%, transparent), transparent 38%),
+      var(--color-bg); color: var(--color-text); line-height: 1.5;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    .app {
+      display: grid; grid-template-columns: minmax(320px, 1.1fr) minmax(360px, 0.9fr); gap: var(--space-6);
+      padding: var(--space-6); max-width: 1500px; margin: 0 auto;
+    }
+    .panel {
+      background: color-mix(in srgb, var(--color-surface) 88%, transparent); border: 1px solid color-mix(in srgb, var(--color-border) 82%, transparent);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; backdrop-filter: blur(10px);
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-2) 88%, transparent), color-mix(in srgb, var(--color-surface) 88%, transparent));
+    }
+    .title-wrap h1 { font-family: var(--font-display); font-size: var(--text-xl); line-height: 1.05; }
+    .title-wrap p { color: var(--color-text-muted); font-size: var(--text-sm); margin-top: .25rem; }
+    .theme-toggle, .utility-btn {
+      border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent); border-radius: var(--radius-full); padding: .7rem .95rem; background: var(--color-surface-2);
+      min-height: 44px; cursor: pointer;
+    }
+    .layout-left { display: grid; gap: var(--space-6); }
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); padding: 0 var(--space-6) var(--space-6);
+    }
+    .stat {
+      background: color-mix(in srgb, var(--color-surface-2) 94%, transparent); border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent); border-radius: var(--radius-md); padding: var(--space-4);
+    }
+    .stat-label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-muted); }
+    .stat-value { font-family: var(--font-display); font-size: var(--text-lg); margin-top: .35rem; }
+    .field-shell { padding: 0 var(--space-6) var(--space-6); }
+    .diamond {
+      position: relative; aspect-ratio: 1.1 / 1; border-radius: 1.5rem; overflow: hidden;
+      background:
+      linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)),
+      repeating-linear-gradient(135deg, #4f8d2f 0 34px, #5b9b36 34px 68px);
+      border: 1px solid rgba(255,255,255,.18);
+      min-height: 620px;
+    }
+    .infield {
+      position: absolute; inset: 11% 17% 16%; background: #e6d8ae; clip-path: polygon(50% 6%, 87% 43%, 50% 80%, 13% 43%);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18)); opacity: .98;
+    }
+    .position-btn {
+      position: absolute; width: 92px; min-height: 92px; transform: translate(-50%, -50%); border-radius: 22px;
+      border: 2px solid rgba(255,255,255,.82); background: rgba(249,248,245,.92); box-shadow: 0 12px 26px rgba(0,0,0,.16);
+      display: grid; place-items: center; text-align: center; padding: .45rem; cursor: pointer;
+    }
+    .position-btn:hover { transform: translate(-50%, -50%) scale(1.03); }
+    .position-btn.active { outline: 3px solid color-mix(in srgb, var(--color-primary) 45%, white); }
+    .slot-tag { font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .08em; }
+    .slot-name { font-weight: 700; font-size: var(--text-sm); max-width: 78px; }
+    .slot-meta { font-size: var(--text-xs); color: var(--color-success); font-weight: 700; }
+    .bench-strip { padding: 0 var(--space-6) var(--space-6); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+    .mini-card { background: var(--color-surface-2); border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent); border-radius: var(--radius-md); padding: var(--space-3); min-height: 86px; }
+    .mini-card h3 { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-muted); }
+    .mini-card p { margin-top: .45rem; font-size: var(--text-sm); }
+    .right-panel { display: grid; grid-template-rows: auto auto minmax(280px, 1fr) auto; min-height: calc(100dvh - 3rem); }
+    .controls { padding: var(--space-5) var(--space-6); display: flex; gap: var(--space-3); flex-wrap: wrap; border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent); }
+    .search { flex: 1 1 230px; border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent); border-radius: var(--radius-full); padding: .82rem 1rem; background: var(--color-surface-2); min-height: 44px; }
+    .player-table-wrap { overflow: auto; padding: 0 var(--space-3) var(--space-3); }
+    table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+    th { position: sticky; top: 0; background: var(--color-surface); text-align: left; font-size: var(--text-xs); letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-muted); padding: .85rem; }
+    td { padding: .85rem; border-top: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent); vertical-align: middle; }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: color-mix(in srgb, var(--color-primary) 9%, var(--color-surface)); }
+    .badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: var(--radius-full); padding: .2rem .55rem; font-size: var(--text-xs); background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)); color: var(--color-primary); }
+    .pill-muted { background: color-mix(in srgb, var(--color-text) 8%, var(--color-surface)); color: var(--color-text-muted); }
+    .footer-note { padding: var(--space-4) var(--space-6) var(--space-6); color: var(--color-text-muted); font-size: var(--text-sm); }
+    .roster-list { padding: 0 var(--space-6) var(--space-6); display: grid; gap: var(--space-3); max-height: 280px; overflow: auto; }
+    .roster-row {
+      display: grid; grid-template-columns: 58px 1fr auto; gap: var(--space-3); align-items: center; background: var(--color-surface-2); border: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent); border-radius: var(--radius-md); padding: var(--space-3);
+    }
+    .roster-row button { border: 1px solid color-mix(in srgb, var(--color-border) 82%, transparent); border-radius: var(--radius-full); padding: .45rem .75rem; background: transparent; cursor: pointer; }
+    .empty-state { padding: var(--space-6); color: var(--color-text-muted); }
+    .status-line { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .success { color: var(--color-success); }
+    .warning { color: var(--color-error); }
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .right-panel { min-height: auto; }
+    }
+    @media (max-width: 720px) {
+      .app { padding: var(--space-4); }
+      .summary-grid, .bench-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .diamond { min-height: 520px; }
+      .position-btn { width: 76px; min-height: 76px; }
+      .slot-name { font-size: 12px; max-width: 62px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="layout-left">
+      <div class="panel">
+        <div class="header">
+          <div class="title-wrap">
+            <h1>Fantasy Roster Builder</h1>
+            <p>Pick 9 hitters and 5 starters while staying at or under $200.</p>
+          </div>
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">◐</button>
+        </div>
+        <div class="summary-grid">
+          <div class="stat"><div class="stat-label">Budget used</div><div class="stat-value" id="budgetUsed">$0.0</div></div>
+          <div class="stat"><div class="stat-label">Budget left</div><div class="stat-value" id="budgetLeft">$200.0</div></div>
+          <div class="stat"><div class="stat-label">Roster spots</div><div class="stat-value" id="spotsFilled">0 / 14</div></div>
+          <div class="stat"><div class="stat-label">Status</div><div class="stat-value" id="rosterStatus">Building</div></div>
+        </div>
+        <div class="field-shell">
+          <div class="diamond" id="diamond">
+            <div class="infield"></div>
+          </div>
+        </div>
+        <div class="bench-strip" id="summaryByType"></div>
+      </div>
+    </section>
+
+    <aside class="panel right-panel">
+      <div class="header">
+        <div class="title-wrap">
+          <h2 style="font-family:var(--font-display); font-size:var(--text-lg)">Player pool</h2>
+          <p id="panelSubtitle">Select a spot on the field to filter the player table.</p>
+        </div>
+        <button class="utility-btn" id="resetRoster">Reset roster</button>
+      </div>
+
+      <div class="controls">
+        <input id="searchInput" class="search" type="search" placeholder="Search player or team" aria-label="Search players" />
+      </div>
+
+      <div class="player-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Pos</th>
+              <th>Salary</th>
+              <th>PTS</th>
+            </tr>
+          </thead>
+          <tbody id="playerRows"></tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="header" style="border-top:1px solid color-mix(in srgb, var(--color-border) 80%, transparent); border-bottom:none;">
+          <div class="title-wrap">
+            <h2 style="font-family:var(--font-display); font-size:var(--text-lg)">Current roster</h2>
+            <p class="status-line" id="completionText">Choose a field slot to begin.</p>
+          </div>
+        </div>
+        <div class="roster-list" id="rosterList"></div>
+        <div class="footer-note">Tip: clicking a filled slot reopens that position so you can swap players quickly.</div>
+      </div>
+    </aside>
+  </div>
+
+<script>
+const ROSTER_SLOTS = [
+  { id: 'C', label: 'Catcher', type: 'batter', x: 50, y: 78, matchers: ['C'] },
+  { id: '1B', label: 'First Base', type: 'batter', x: 73, y: 48, matchers: ['1B'] },
+  { id: '2B', label: 'Second Base', type: 'batter', x: 50, y: 24, matchers: ['2B'] },
+  { id: '3B', label: 'Third Base', type: 'batter', x: 27, y: 48, matchers: ['3B'] },
+  { id: 'SS', label: 'Shortstop', type: 'batter', x: 38, y: 36, matchers: ['SS'] },
+  { id: 'MI', label: 'Middle Infield', type: 'batter', x: 62, y: 36, matchers: ['2B','SS'] },
+  { id: 'CI', label: 'Corner Infield', type: 'batter', x: 38, y: 61, matchers: ['1B','3B'] },
+  { id: 'OF1', label: 'Outfield 1', type: 'batter', x: 18, y: 20, matchers: ['OF'] },
+  { id: 'OF2', label: 'Outfield 2', type: 'batter', x: 50, y: 10, matchers: ['OF'] },
+  { id: 'SP1', label: 'Starter 1', type: 'starter', x: 16, y: 88, matchers: ['SP','P'] },
+  { id: 'SP2', label: 'Starter 2', type: 'starter', x: 37, y: 88, matchers: ['SP','P'] },
+  { id: 'SP3', label: 'Starter 3', type: 'starter', x: 50, y: 88, matchers: ['SP','P'] },
+  { id: 'SP4', label: 'Starter 4', type: 'starter', x: 63, y: 88, matchers: ['SP','P'] },
+  { id: 'SP5', label: 'Starter 5', type: 'starter', x: 84, y: 88, matchers: ['SP','P'] }
+];
+const BUDGET_MAX = 200;
+let players = [];
+let activeSlot = null;
+const roster = Object.fromEntries(ROSTER_SLOTS.map(slot => [slot.id, null]));
+const state = { search: '' };
+
+const els = {
+  diamond: document.getElementById('diamond'), playerRows: document.getElementById('playerRows'), rosterList: document.getElementById('rosterList'),
+  panelSubtitle: document.getElementById('panelSubtitle'), budgetUsed: document.getElementById('budgetUsed'), budgetLeft: document.getElementById('budgetLeft'),
+  spotsFilled: document.getElementById('spotsFilled'), rosterStatus: document.getElementById('rosterStatus'), searchInput: document.getElementById('searchInput'),
+  completionText: document.getElementById('completionText'), summaryByType: document.getElementById('summaryByType')
+};
+
+function csvToObjects(text) {
+  const rows = [];
+  let cur = [], row = [], quote = false;
+  for (let i=0; i<text.length; i++) {
+    const c = text[i];
+    if (c === '"') {
+      if (quote && text[i+1] === '"') { cur.push('"'); i++; }
+      else { quote = !quote; }
+    } else if (c === ',' && !quote) {
+      row.push(cur.join('')); cur = [];
+    } else if ((c === '\n' || c === '\r') && !quote) {
+      if (c === '\r' && text[i+1] === '\n') i++;
+      row.push(cur.join('')); cur = [];
+      if (row.some(v => v !== '')) rows.push(row);
+      row = [];
+    } else {
+      cur.push(c);
+    }
+  }
+  if (cur.length || row.length) { row.push(cur.join('')); rows.push(row); }
+  const header = rows.shift().map(v => v.trim());
+  return rows.map(r => Object.fromEntries(header.map((h, i) => [h, (r[i] ?? '').trim()])));
+}
+function parseNum(v) {
+  const n = parseFloat(String(v ?? '').replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
+function normalizePos(raw) {
+  return String(raw || '').match(/SP|RP|P|C|1B|2B|3B|SS|OF|DH/g) || [];
+}
+function mapPlayer(row, idx) {
+  const name = row.Name || row.player || row.Player || `Player ${idx+1}`;
+  const team = row.Team || row.team || '';
+  const posRaw = row.POS || row.Pos || row.Position || '';
+  const dollars = parseNum(row.Dollars ?? row.Auction ?? row.Value ?? row.Salary);
+  const pts = parseNum(row.PTS ?? row.Points ?? row.Projection);
+  return { id: row.PlayerId || row.MLBAMID || `${name}-${idx}`, name, team, posRaw, positions: normalizePos(posRaw), dollars: dollars ?? 0, pts: pts ?? 0 };
+}
+function formatMoney(v) { return `$${(v || 0).toFixed(1)}`; }
+function totalSpent() { return Object.values(roster).reduce((sum, p) => sum + (p?.dollars || 0), 0); }
+function filledCount() { return Object.values(roster).filter(Boolean).length; }
+function playersUsedSet(excludeSlot = null) {
+  return new Set(Object.entries(roster).filter(([slot, p]) => p && slot !== excludeSlot).map(([, p]) => p.id));
+}
+function slotCandidates(slot) {
+  if (!slot) return [];
+  const used = playersUsedSet(slot.id);
+  const currentSpentExcluding = totalSpent() - (roster[slot.id]?.dollars || 0);
+  return players
+    .filter(p => p.positions.some(pos => slot.matchers.includes(pos)))
+    .filter(p => !used.has(p.id))
+    .filter(p => p.dollars + currentSpentExcluding <= BUDGET_MAX + 0.0001)
+    .filter(p => {
+      const q = state.search.trim().toLowerCase();
+      if (!q) return true;
+      return [p.name, p.team, p.posRaw].join(' ').toLowerCase().includes(q);
+    })
+    .sort((a, b) => b.pts - a.pts || a.dollars - b.dollars);
+}
+function setActiveSlot(id) {
+  activeSlot = ROSTER_SLOTS.find(s => s.id === id) || null;
+  document.querySelectorAll('.position-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.slotId === id));
+  renderTable();
+}
+function renderField() {
+  els.diamond.querySelectorAll('.position-btn').forEach(n => n.remove());
+  ROSTER_SLOTS.forEach(slot => {
+    const selected = roster[slot.id];
+    const btn = document.createElement('button');
+    btn.className = 'position-btn';
+    btn.dataset.slotId = slot.id;
+    btn.style.left = `${slot.x}%`;
+    btn.style.top = `${slot.y}%`;
+    btn.innerHTML = `<div><div class="slot-tag">${slot.id}</div><div class="slot-name">${selected ? selected.name : slot.label}</div><div class="slot-meta">${selected ? formatMoney(selected.dollars) : 'Pick player'}</div></div>`;
+    btn.addEventListener('click', () => setActiveSlot(slot.id));
+    els.diamond.appendChild(btn);
+  });
+}
+function renderTable() {
+  els.playerRows.innerHTML = '';
+  if (!activeSlot) {
+    els.panelSubtitle.textContent = 'Select a field spot to view matching players.';
+    return;
+  }
+  const candidates = slotCandidates(activeSlot);
+  els.panelSubtitle.textContent = `${activeSlot.label}: ${candidates.length} eligible players under the remaining budget.`;
+  if (!candidates.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="5" class="empty-state">No eligible players fit this slot and budget. Remove another player or choose a cheaper option.</td>`;
+    els.playerRows.appendChild(tr);
+    return;
+  }
+  candidates.slice(0, 250).forEach(player => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${player.name}</strong></td>
+      <td>${player.team || '—'}</td>
+      <td><span class="badge pill-muted">${player.posRaw || '—'}</span></td>
+      <td>${formatMoney(player.dollars)}</td>
+      <td>${player.pts.toFixed(1)}</td>`;
+    tr.addEventListener('click', () => assignPlayer(activeSlot.id, player));
+    els.playerRows.appendChild(tr);
+  });
+}
+function assignPlayer(slotId, player) {
+  roster[slotId] = player;
+  renderAll();
+}
+function removePlayer(slotId) {
+  roster[slotId] = null;
+  renderAll();
+  setActiveSlot(slotId);
+}
+function renderRoster() {
+  els.rosterList.innerHTML = '';
+  const filled = Object.entries(roster).filter(([, p]) => p);
+  if (!filled.length) {
+    els.rosterList.innerHTML = `<div class="empty-state">Your roster will appear here as you fill the field.</div>`;
+    return;
+  }
+  ROSTER_SLOTS.forEach(slot => {
+    const player = roster[slot.id];
+    const row = document.createElement('div');
+    row.className = 'roster-row';
+    row.innerHTML = `
+      <div><span class="badge">${slot.id}</span></div>
+      <div>
+        <div style="font-weight:700">${player ? player.name : slot.label}</div>
+        <div class="status-line">${player ? `${player.team || '—'} • ${player.posRaw || '—'} • ${formatMoney(player.dollars)} • ${player.pts.toFixed(1)} pts` : 'Empty slot'}</div>
+      </div>
+      <div>${player ? '<button type="button">Remove</button>' : ''}</div>`;
+    if (player) row.querySelector('button').addEventListener('click', () => removePlayer(slot.id));
+    els.rosterList.appendChild(row);
+  });
+}
+function renderSummary() {
+  const spent = totalSpent();
+  const remaining = BUDGET_MAX - spent;
+  const filled = filledCount();
+  const hitters = ROSTER_SLOTS.filter(s => s.type === 'batter').filter(s => roster[s.id]).length;
+  const starters = ROSTER_SLOTS.filter(s => s.type === 'starter').filter(s => roster[s.id]).length;
+  els.budgetUsed.textContent = formatMoney(spent);
+  els.budgetLeft.textContent = formatMoney(remaining);
+  els.spotsFilled.textContent = `${filled} / ${ROSTER_SLOTS.length}`;
+  const complete = filled === ROSTER_SLOTS.length && remaining >= 0;
+  els.rosterStatus.textContent = complete ? 'Complete' : remaining < 0 ? 'Over budget' : 'Building';
+  els.rosterStatus.className = 'stat-value ' + (complete ? 'success' : remaining < 0 ? 'warning' : '');
+  els.completionText.textContent = complete ? 'Roster is complete and under budget.' : `${ROSTER_SLOTS.length - filled} spots left • ${hitters}/9 hitters • ${starters}/5 starters`;
+  els.summaryByType.innerHTML = `
+    <div class="mini-card"><h3>Hitters</h3><p>${hitters} of 9 selected</p></div>
+    <div class="mini-card"><h3>Starters</h3><p>${starters} of 5 selected</p></div>
+    <div class="mini-card"><h3>Top points</h3><p>${Object.values(roster).reduce((s,p)=>s+(p?.pts||0),0).toFixed(1)} projected</p></div>
+    <div class="mini-card"><h3>Budget rule</h3><p>Stay at or below ${formatMoney(BUDGET_MAX)}</p></div>`;
+}
+function renderAll() { renderField(); renderTable(); renderRoster(); renderSummary(); }
+function resetRoster() { Object.keys(roster).forEach(k => roster[k] = null); setActiveSlot('C'); renderAll(); }
+
+fetch('./fangraphs-auction-calculator.csv')
+  .then(r => r.text())
+  .then(text => {
+    players = csvToObjects(text).map(mapPlayer).filter(p => p.name && p.positions.length && Number.isFinite(p.dollars));
+    renderField();
+    renderRoster();
+    renderSummary();
+    setActiveSlot('C');
+  })
+  .catch(() => {
+    els.playerRows.innerHTML = '<tr><td colspan="5" class="empty-state">Could not load the CSV. Keep the HTML file next to the CSV file.</td></tr>';
+  });
+
+document.getElementById('resetRoster').addEventListener('click', resetRoster);
+els.searchInput.addEventListener('input', e => { state.search = e.target.value; renderTable(); });
+document.querySelector('[data-theme-toggle]').addEventListener('click', () => {
+  document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+});
+</script>
+</body>
+</html>
