@@ -72,13 +72,13 @@ const ROSTER_SLOTS = [
   { id: 'SS', label: 'Shortstop', type: 'batter', x: 41, y: 49, matchers: ['SS'] },
   { id: '2B', label: 'Second Base', type: 'batter', x: 59, y: 49, matchers: ['2B'] },
   { id: '1B', label: 'First Base', type: 'batter', x: 70, y: 60, matchers: ['1B'] },
-  { id: 'C', label: 'Catcher', type: 'batter', x: 50, y: 75, matchers: ['C'] },
+  { id: 'C', label: 'Catcher', type: 'batter', x: 50, y: 70, matchers: ['C'] },
   { id: 'UTIL', label: 'Utility', type: 'batter', x: 18, y: 72, matchers: ['C','1B','2B','3B','SS','OF','DH'] },
-  { id: 'SP1', label: 'Starter 1', type: 'starter', x: 47, y: 89, matchers: ['SP','P'] },
-  { id: 'SP2', label: 'Starter 2', type: 'starter', x: 56, y: 89, matchers: ['SP','P'] },
-  { id: 'SP3', label: 'Starter 3', type: 'starter', x: 65, y: 89, matchers: ['SP','P'] },
-  { id: 'SP4', label: 'Starter 4', type: 'starter', x: 74, y: 89, matchers: ['SP','P'] },
-  { id: 'RP', label: 'Reliever', type: 'starter', x: 83, y: 89, matchers: ['RP','P'] }
+  { id: 'SP1', label: 'Starter 1', type: 'starter', x: 30, y: 89, matchers: ['SP','P'] },
+  { id: 'SP2', label: 'Starter 2', type: 'starter', x: 40, y: 89, matchers: ['SP','P'] },
+  { id: 'SP3', label: 'Starter 3', type: 'starter', x: 60, y: 89, matchers: ['SP','P'] },
+  { id: 'SP4', label: 'Starter 4', type: 'starter', x: 70, y: 89, matchers: ['SP','P'] },
+  { id: 'RP', label: 'Reliever', type: 'starter', x: 80, y: 89, matchers: ['RP','P'] }
 ];
 const BUDGET_MAX = 200; let players = []; let activeSlot = null; const roster = Object.fromEntries(ROSTER_SLOTS.map(slot => [slot.id, null])); const state = { search: '' };
 const els = { diamond: document.getElementById('diamond'), playerRows: document.getElementById('playerRows'), rosterList: document.getElementById('rosterList'), panelSubtitle: document.getElementById('panelSubtitle'), budgetUsed: document.getElementById('budgetUsed'), budgetLeft: document.getElementById('budgetLeft'), spotsFilled: document.getElementById('spotsFilled'), rosterStatus: document.getElementById('rosterStatus'), searchInput: document.getElementById('searchInput'), completionText: document.getElementById('completionText'), summaryByType: document.getElementById('summaryByType') };
