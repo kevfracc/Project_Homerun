@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+  <!-- PWA Perplexity 6/2/26 -->
+  <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#01696f">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fantasy Roster Builder</title>
@@ -59,7 +66,7 @@
 
       </div>
     </section>
-    <aside class="panel right-panel">
+    <div class="pool-modal" id="poolModal" aria-hidden="true"><div class="pool-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="poolModalTitle"><div class="pool-modal-header"><div class="title-wrap"><h2 id="poolModalTitle" style="font-family:var(--font-display); font-size:var(--text-lg)">Player pool</h2><p id="poolModalSubtitle">Select a slot to filter the available players.</p></div><button class="pool-modal-close" id="closePoolModal" type="button">Close</button></div><div class="pool-modal-body"><aside class="panel right-panel" style="border:none; box-shadow:none; border-radius:0; overflow:visible;"><div class="header"><div class="title-wrap"><h2 style="font-family:var(--font-display); font-size:var(--text-lg)">Player pool</h2><p id="panelSubtitle">Select a spot on the field to filter the player table.</p></div><button class="utility-btn" id="resetRoster">Reset roster</button></div><div class="controls"><input id="searchInput" class="search" type="search" placeholder="Search player or team" aria-label="Search players"></div><div class="player-table-wrap"><table><thead><tr><th data-sort="name">Player</th><th data-sort="team">Team</th><th data-sort="posRaw">Raw Pos</th><th data-sort="dollars">Salary</th><th data-sort="pts">PTS</th></tr></thead><tbody id="playerRows"></tbody></table></div></aside></div></div></div>
       <div class="header"><div class="title-wrap"><h2 style="font-family:var(--font-display); font-size:var(--text-lg)">Player pool</h2><p id="panelSubtitle">Select a spot on the field to filter the player table.</p></div><button class="utility-btn" id="resetRoster">Reset roster</button></div>
       <div class="controls"><input id="searchInput" class="search" type="search" placeholder="Search player or team" aria-label="Search players" /></div>
       <div class="player-table-wrap"><table><thead><tr><th data-sort="name">Player</th><th data-sort="team">Team</th><th data-sort="posRaw">Pos</th><th data-sort="dollars">Salary</th><th data-sort="pts">PTS</th></tr></thead><tbody id="playerRows"></tbody></table></div>
@@ -102,5 +109,15 @@ function renderAll() { renderField(); renderTable(); renderRoster(); renderSumma
 fetch('./fangraphs-auction-calculator.csv').then(r => r.text()).then(text => { players = csvToObjects(text).map(mapPlayer).filter(p => p.name && p.positions.length && Number.isFinite(p.dollars)); state.search = ''; state.sort = 'pts_desc'; state.posFilter = ''; activeSlot = null; els.searchInput.value = ''; els.panelSubtitle.textContent = 'All players available. Click a field position to filter.'; renderField(); renderRoster(); renderSummary(); renderTable(); }).catch(() => { els.playerRows.innerHTML = '<tr><td colspan="5" class="empty-state">Could not load the CSV. Keep the HTML file next to the CSV file.</td></tr>'; });
 document.getElementById('resetRoster').addEventListener('click', resetRoster); els.searchInput.addEventListener('input', e => { state.search = e.target.value; renderTable(); }); document.querySelector('[data-theme-toggle]').addEventListener('click', () => { document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; }); document.querySelectorAll('th[data-sort]').forEach(th => { th.addEventListener('click', () => { const key = th.dataset.sort; const current = state.sort.split('_'); const nextDir = current[0] === key && current[1] === 'asc' ? 'desc' : 'asc'; state.sort = `${key}_${nextDir}`; document.querySelectorAll('th[data-sort]').forEach(h => h.classList.remove('sort-asc', 'sort-desc')); th.classList.add(nextDir === 'asc' ? 'sort-asc' : 'sort-desc'); renderTable(); }); });
 </script>
+<!-- PWA Perplexity 6/2/26 -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then(reg => console.log("Service worker registered:", reg.scope))
+        .catch(err => console.error("Service worker registration failed:", err));
+    });
+  }
+  </script>
 </body>
 </html>
