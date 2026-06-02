@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Roster Builder</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=general-sans@500,600,700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#01696f" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <section class="layout-left">
+      <div class="panel">
+        <div class="header">
+          <div class="title-wrap">
+            <h1>Fantasy Roster Builder</h1>
+            <p>Use the attached stadium photo as the board and fill 9 batters plus 5 pitchers under $200.</p>
+          </div>
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">◐</button>
+        </div>
+
+        <div class="summary-grid">
+          <div class="stat">
+            <div class="stat-label">Budget used</div>
+            <div class="stat-value" id="budgetUsed">$0.0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Budget left</div>
+            <div class="stat-value" id="budgetLeft">$200.0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Roster spots</div>
+            <div class="stat-value" id="spotsFilled">0 / 14</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Status</div>
+            <div class="stat-value" id="rosterStatus">Building</div>
+          </div>
+        </div>
+
+        <div class="field-shell">
+          <div class="diamond" id="diamond"></div>
+        </div>
+
+        <div class="bench-strip" id="summaryByType"></div>
+
+        <div>
+          <div class="header header-subsection">
+            <div class="title-wrap">
+              <h2 class="section-title">Current roster</h2>
+              <p class="status-line" id="completionText">Choose a field slot to begin.</p>
+            </div>
+          </div>
+
+          <div class="roster-list" id="rosterList"></div>
+          <div class="footer-note">Click any filled position card on the field to swap that player in place.</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel right-panel">
+      <div class="header">
+        <div class="title-wrap">
+          <h2 class="section-title">Player pool</h2>
+          <p id="panelSubtitle">Select a spot on the field to filter the player table.</p>
+        </div>
+        <button class="utility-btn" id="resetRoster" type="button">Reset roster</button>
+      </div>
+
+      <div class="controls">
+        <input
+          id="searchInput"
+          class="search"
+          type="search"
+          placeholder="Search player or team"
+          aria-label="Search players"
+        />
+      </div>
+
+      <div class="player-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="name">Player</th>
+              <th data-sort="team">Team</th>
+              <th data-sort="posRaw">Pos</th>
+              <th data-sort="dollars">Salary</th>
+              <th data-sort="pts">PTS</th>
+            </tr>
+          </thead>
+          <tbody id="playerRows"></tbody>
+        </table>
+      </div>
+    </aside>
+  </div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
