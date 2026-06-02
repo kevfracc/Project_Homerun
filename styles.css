@@ -98,8 +98,7 @@ button {
 .app-header,
 .toolbar,
 .panel-header,
-.table-wrap,
-.summary-header {
+.table-wrap {
   margin-bottom: var(--space-6);
 }
 
@@ -122,10 +121,17 @@ button {
   font-size: var(--text-sm);
 }
 
+.app-header-copy {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+}
+
 .summary-header {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
+  margin: 0;
 }
 
 .summary-card {
@@ -156,8 +162,7 @@ button {
 }
 
 .tab-button,
-.utility-btn,
-.theme-toggle {
+.utility-btn {
   min-height: 44px;
   padding: 0.7rem 1rem;
   border: 1px solid var(--color-border);

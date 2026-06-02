@@ -16,27 +16,27 @@
 <body>
   <main class="page-shell">
     <header class="app-header">
-      <div>
-        <h1>Fantasy Roster Builder</h1>
-        <p>Build a roster of 9 batters and 5 pitchers under the salary cap.</p>
+      <div class="app-header-copy">
+        <div>
+          <h1>Fantasy Roster Builder</h1>
+          <p>Build a roster of 9 batters and 5 pitchers under the salary cap.</p>
+        </div>
+        <section class="summary-header" aria-label="Roster summary">
+          <article class="summary-card">
+            <span class="summary-label">Budget Used</span>
+            <strong class="summary-value" id="budgetUsed">$0.0</strong>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Budget Remaining</span>
+            <strong class="summary-value" id="budgetLeft">$200.0</strong>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Roster spots</span>
+            <strong class="summary-value" id="spotsFilled">0 / 14</strong>
+          </article>
+        </section>
       </div>
-      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle color theme">◐</button>
     </header>
-
-    <section class="summary-header" aria-label="Roster summary">
-      <article class="summary-card">
-        <span class="summary-label">Budget Used</span>
-        <strong class="summary-value" id="budgetUsed">$0.0</strong>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">Budget Remaining</span>
-        <strong class="summary-value" id="budgetLeft">$200.0</strong>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">Roster spots</span>
-        <strong class="summary-value" id="spotsFilled">0 / 14</strong>
-      </article>
-    </section>
 
     <section class="toolbar">
       <div class="tablist" role="tablist" aria-label="Roster views">

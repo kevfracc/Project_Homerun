@@ -49,8 +49,7 @@ const dom = {
   panelPool: document.getElementById("panelPool"),
   resetRoster: document.getElementById("resetRoster"),
   searchInput: document.getElementById("searchInput"),
-  slotSelector: document.getElementById("slotSelector"),
-  themeToggle: document.querySelector("[data-theme-toggle]")
+  slotSelector: document.getElementById("slotSelector")
 };
 
 function normalizePos(raw) {
@@ -322,10 +321,6 @@ function bindEvents() {
     renderAll();
   });
 
-  dom.themeToggle.addEventListener("click", () => {
-    document.documentElement.dataset.theme =
-      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  });
 }
 
 function init() {
