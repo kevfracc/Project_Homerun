@@ -86,7 +86,6 @@ button {
 }
 
 .app-header,
-.toolbar,
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -95,14 +94,12 @@ button {
 }
 
 .app-header,
-.toolbar,
 .panel-header,
 .table-wrap {
   margin-bottom: var(--space-6);
 }
 
 .app-header,
-.toolbar,
 .panel-header {
   padding: var(--space-4);
 }
@@ -167,6 +164,7 @@ button {
   padding: 0.25rem;
   border-radius: var(--radius-full);
   background: var(--color-surface-soft);
+  align-self: flex-start;
 }
 
 .tab-button,
@@ -322,7 +320,6 @@ tbody tr:hover {
   }
 
   .app-header,
-  .toolbar,
   .panel-header {
     flex-direction: column;
     align-items: stretch;

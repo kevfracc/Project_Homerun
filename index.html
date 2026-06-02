@@ -19,7 +19,6 @@
       <div class="app-header-copy">
         <div>
           <h1>Fantasy Roster Builder</h1>
-          <p>Build a roster of 9 batters and 5 pitchers under the salary cap.</p>
         </div>
         <section class="summary-header" aria-label="Roster summary">
           <article class="summary-card">
@@ -35,19 +34,13 @@
             <strong class="summary-value" id="spotsFilled">0 / 14</strong>
           </article>
         </section>
+        <div class="tablist" role="tablist" aria-label="Roster views">
+          <button id="tabRoster" class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="panelRoster">Current Roster</button>
+          <button id="tabPool" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelPool">Player Pool</button>
+        </div>
       </div>
     </header>
 
-    <section class="toolbar">
-      <div class="tablist" role="tablist" aria-label="Roster views">
-        <button id="tabRoster" class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="panelRoster">Current Roster</button>
-        <button id="tabPool" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelPool">Player Pool</button>
-      </div>
-
-      <div class="toolbar-actions">
-        <button id="resetRoster" class="utility-btn" type="button">Reset roster</button>
-      </div>
-    </section>
 
     <section id="panelRoster" class="panel" role="tabpanel" aria-labelledby="tabRoster">
       <div class="panel-header">
@@ -55,6 +48,7 @@
           <h2>Current Roster</h2>
           <p id="completionText">Select a row to assign or replace a player.</p>
         </div>
+        <button id="resetRoster" class="utility-btn" type="button">Reset roster</button>
       </div>
 
       <div class="table-wrap">
@@ -62,11 +56,11 @@
           <caption class="sr-only">Current roster with 14 assigned positions</caption>
           <thead>
             <tr>
-              <th scope="col">Position</th>
+              <th scope="col">Pos</th>
+              <th scope="col">Price</th>
               <th scope="col">Image</th>
               <th scope="col">Name</th>
               <th scope="col">Team</th>
-              <th scope="col">Salary</th>
             </tr>
           </thead>
           <tbody id="rosterRows"></tbody>
@@ -90,14 +84,13 @@
 
       <div class="table-wrap">
         <table>
-          <caption class="sr-only">Player pool with selected players highlighted</caption>
           <thead>
             <tr>
-              <th scope="col">Image</th>
-              <th scope="col">Player</th>
-              <th scope="col">Team</th>
               <th scope="col">Pos</th>
-              <th scope="col">Salary</th>
+              <th scope="col">Price</th>
+              <th scope="col">Image</th>
+              <th scope="col">Name</th>
+              <th scope="col">Team</th>
               <th scope="col">Status</th>
             </tr>
           </thead>

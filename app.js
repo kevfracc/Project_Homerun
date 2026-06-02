@@ -11,9 +11,13 @@ const ROSTER_SLOTS = [
   { id: "2B", label: "Second Base", type: "batter", matchers: ["2B"] },
   { id: "3B", label: "Third Base", type: "batter", matchers: ["3B"] },
   { id: "SS", label: "Shortstop", type: "batter", matchers: ["SS"] },
-  { id: "LF", label: "Left Field", type: "batter", matchers: ["OF"] },
-  { id: "CF", label: "Center Field", type: "batter", matchers: ["OF"] },
-  { id: "RF", label: "Right Field", type: "batter", matchers: ["OF"] },
+  // Generic outfield slots
+  { id: "OF1", label: "Outfield 1", type: "batter", matchers: ["OF"] },
+  { id: "OF2", label: "Outfield 2", type: "batter", matchers: ["OF"] },
+  { id: "OF3", label: "Outfield 3", type: "batter", matchers: ["OF"] },
+  //{ id: "LF", label: "Left Field", type: "batter", matchers: ["OF"] },
+  //{ id: "CF", label: "Center Field", type: "batter", matchers: ["OF"] },
+  //{ id: "RF", label: "Right Field", type: "batter", matchers: ["OF"] },
   { id: "UTIL", label: "Utility", type: "batter", matchers: ["C", "1B", "2B", "3B", "SS", "OF", "DH"] },
   { id: "SP1", label: "Starter 1", type: "pitcher", matchers: ["SP", "P"] },
   { id: "SP2", label: "Starter 2", type: "pitcher", matchers: ["SP", "P"] },
@@ -53,8 +57,24 @@ const dom = {
 };
 
 function normalizePos(raw) {
+  const code = String(raw || "").toUpperCase().trim();
+
+  // Map all outfield positions to generic OF
+  if (code === "LF" || code === "CF" || code === "RF") {
+    return ["OF"];
+  }
+
+  if (["SP", "RP", "P", "C", "1B", "2B", "3B", "SS", "OF", "DH"].includes(code)) {
+    return [code];
+  }
+
+  return [];
+}
+/*
+function normalizePos(raw) {
   return String(raw || "").match(/SP|RP|P|C|1B|2B|3B|SS|OF|DH/g) || [];
 }
+*/
 
 function estimateSalary(pos) {
   if (["SP", "RP", "P"].includes(pos)) return 12;
@@ -101,6 +121,46 @@ function eligiblePlayers() {
   const query = state.search.trim().toLowerCase();
   const slot = getSlotById(activeSlotId);
   const used = playersUsedSet(activeSlotId || null);
+  const currentSpentExcludingSlot = slot
+    ? totalSpent() - (roster[slot.id]?.dollars || 0)
+    : totalSpent();
+
+  let filtered = players.filter((player) => !used.has(player.id));
+
+  if (slot) {
+    filtered = filtered.filter((player) =>
+      player.positions.some((pos) => slot.matchers.includes(pos))
+    );
+    filtered = filtered.filter(
+      (player) => player.dollars + currentSpentExcludingSlot <= BUDGET_MAX + 0.0001
+    );
+  }
+
+  if (query) {
+    filtered = filtered.filter((player) =>
+      [player.name, player.team, player.posRaw].join(" ").toLowerCase().includes(query)
+    );
+  }
+
+  // Sort by price (dollars) descending, then name ascending
+  return filtered.sort((a, b) => {
+    const aPrice = Number(a.dollars) || 0;
+    const bPrice = Number(b.dollars) || 0;
+
+    if (aPrice !== bPrice) {
+      return bPrice - aPrice; // highest price first
+    }
+
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
+}
+/*
+function eligiblePlayers() {
+  const query = state.search.trim().toLowerCase();
+  const slot = getSlotById(activeSlotId);
+  const used = playersUsedSet(activeSlotId || null);
   const currentSpentExcludingSlot = slot ? totalSpent() - (roster[slot.id]?.dollars || 0) : totalSpent();
 
   let filtered = players.filter((player) => !used.has(player.id));
@@ -122,6 +182,7 @@ function eligiblePlayers() {
     return 0;
   });
 }
+  */
 
 function setView(viewName) {
   currentView = viewName;
@@ -148,12 +209,12 @@ function renderSummary() {
     : "Select a row to assign or replace a player.";
 
   dom.panelSubtitle.textContent = activeSlotId
-    ? `Showing eligible players for ${activeSlotId}. Selected roster players have a blue border.`
-    : "All players loaded from the MLB API. Selected roster players have a blue border.";
+    ? `Showing eligible players for ${activeSlotId}.`
+    : "All players loaded from the MLB API.";
 }
 
 function renderSlotSelector() {
-  dom.slotSelector.innerHTML = '<option value="">Choose roster slot</option>';
+  dom.slotSelector.innerHTML = '<option value="">Remaining Players</option>';
 
   ROSTER_SLOTS.forEach((slot) => {
     const option = document.createElement("option");
@@ -173,6 +234,7 @@ function renderRosterTable() {
     row.className = "roster-row";
     row.innerHTML = `
       <th scope="row">${slot.id}</th>
+      <td>${player ? formatMoney(player.dollars) : "$0.0"}</td>
       <td>
         <img class="avatar" src="${player ? getHeadshot(player) : HEADSHOT_FALLBACK}" alt="${player ? `${player.name} headshot` : `${slot.label} placeholder`}" />
       </td>
@@ -180,7 +242,6 @@ function renderRosterTable() {
         <div class="player-name">${player ? player.name : "Empty slot"}</div>
       </td>
       <td class="muted">${player ? player.team || "—" : "—"}</td>
-      <td>${player ? formatMoney(player.dollars) : "$0.0"}</td>
     `;
 
     row.addEventListener("click", () => {
@@ -212,11 +273,11 @@ function renderPlayerPoolTable() {
     const row = document.createElement("tr");
     row.className = `player-row ${isSelected ? "is-selected" : ""} ${activeSlotId ? "is-fillable" : ""}`.trim();
     row.innerHTML = `
+      <td>${player.posRaw || "—"}</td>
+      <td>${formatMoney(player.dollars)}</td>
       <td><img class="avatar" src="${getHeadshot(player)}" alt="${player.name} headshot" /></td>
       <td><span class="player-name">${player.name}</span></td>
       <td>${player.team || "—"}</td>
-      <td>${player.posRaw || "—"}</td>
-      <td>${formatMoney(player.dollars)}</td>
       <td>${isSelected ? '<span class="selected-badge">Selected</span>' : '<span class="placeholder-text">Available</span>'}</td>
     `;
 
